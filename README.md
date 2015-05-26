@@ -28,12 +28,17 @@ Analysis macro for FRET biosensors. Input is a 3-channel interleaved image of th
 * Prompt user to threshold ratio image to remove black background
 * Measure an ROI's mean ratio across the entire movie
 
-Originally authored by Daniel J. Shiwarski, with minor modifications by me.
+Originally authored by Daniel J. Shiwarski, with minor modifications to enhance by me.
 
 Measure Stack
 -------------
 
 Simple macro to add "Measure Stack" to Fiji (which lacks the command).
+
+Reslice Stack
+-------------
+
+Takes an x-channel stack and produces kymographs along the z/t dimension.
 
 SplitFiles...
 -------------
