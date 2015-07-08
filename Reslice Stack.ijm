@@ -8,26 +8,18 @@ wdth=Dialog.getNumber();
 hght=Dialog.getNumber();
 
 rename("Image")
-run("Deinterleave", "how=2");
+run("Deinterleave", "how=ch");
 setBatchMode(true)
-selectWindow("Image #1");
-run("Duplicate...", "title=[Image1] duplicate range=1-nSlices");
-selectWindow("Image #1");
-close();
-selectWindow("Image #2");
-run("Duplicate...", "title=[Image2] duplicate range=1-nSlices");
-selectWindow("Image #2");
-close();
-
-selectWindow("Image1");
-selectWindow("Image2");
-for (n= 0; n<hght; n++) {
-	selectWindow("Image1");
-	makeLine(0, n, wdth, n);
-	run("Reslice [/]...", "output=1.000 slice_count=1 avoid");
-	selectWindow("Image2");
-	makeLine(0, n, wdth, n);
-	run("Reslice [/]...", "output=1.000 slice_count=1 avoid");
+for (i=1; i<=ch; i++) {
+	selectWindow("Image #"+ch);
+	run("Duplicate...", "title=[Image"+ch+"] duplicate range=1-nSlices");
+	selectWindow("Image #"+ch);
+	close();
+	for (n= 0; n<hght; n++) {
+		selectWindow("Image"+ch);
+		makeLine(0, n, wdth, n);
+		run("Reslice [/]...", "output=1.000 slice_count=1 avoid");
+	}
 }
 
 run("Images to Stack", "name=Interleaved title=Reslice");

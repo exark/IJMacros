@@ -1,6 +1,5 @@
 rename("EKAR Analysis");
 	rename("Original");
-	setBatchMode(true);
 	run("Duplicate...", "title=[EKAR Analysis] duplicate range=1-nSlices");
 	selectWindow("Original")
 	close()
@@ -14,32 +13,22 @@ rename("EKAR Analysis");
 	selectWindow("EKAR Analysis")
 		run("Split Channels");
 	selectWindow("C1-EKAR Analysis");
-		rename("EKAR FRET");
-		run("Enhance Contrast", "saturated=0.35");
-	selectWindow("C2-EKAR Analysis");
 		rename("EKAR CFP");
-		run("Enhance Contrast", "saturated=0.35");
+	selectWindow("C2-EKAR Analysis");
+		rename("EKAR FRET");
 	selectWindow("C3-EKAR Analysis");
 		rename("EKAR M1 Label");
-		run("Enhance Contrast", "saturated=0.35");
 
-
-	imageCalculator("Divide create 32-bit stack", "EKAR FRET", "EKAR CFP");
-		selectWindow("Result of EKAR FRET");
-			rename("EKAR FRET/CFP");
-
-	selectWindow("EKAR CFP");
+	selectWindow("EKAR FRET");
 
 		run("Duplicate...", "title=[EKAR CFP-1] duplicate range=1-fr");
 		selectWindow("EKAR CFP-1");
-		rename("EKAR CFP Mask");
+		rename("EKAR FRET Mask");
 		run("Gaussian Blur...", "sigma=5 stack");
-		setAutoThreshold("Default dark");
-		//run("Threshold...");
 		setOption("BlackBackground", false);
 		run("Convert to Mask", "method=Default background=Dark calculate black");
 
-	selectWindow("EKAR CFP Mask");
+	selectWindow("EKAR FRET Mask");
 		run("Divide...", "value=255 stack");
 
 	selectWindow("EKAR FRET");
@@ -55,7 +44,7 @@ rename("EKAR Analysis");
 		selectWindow("Result of EKAR FRET for Ratio");
 		rename("EKAR FRET/CFP Ratio");
 
-	imageCalculator("Multiply create 32-bit stack", "EKAR FRET/CFP Ratio","EKAR CFP Mask");
+	imageCalculator("Multiply create 32-bit stack", "EKAR FRET/CFP Ratio","EKAR FRET Mask");
 		selectWindow("Result of EKAR FRET/CFP Ratio");
 		rename("Final FRET/CFP Image");
 		run("01 Jet");
@@ -64,11 +53,9 @@ rename("EKAR Analysis");
 		run("Clear Results");
 		//setMinAndMax(1.46, 2.49);
 
-	selectWindow("EKAR CFP Mask");
+	selectWindow("EKAR FRET Mask");
 		run("Close");
 	selectWindow("EKAR FRET/CFP Ratio");
-		run("Close");
-	selectWindow("EKAR FRET/CFP");
 		run("Close");
 	selectWindow("EKAR FRET for Ratio");
 		close();
@@ -81,7 +68,6 @@ rename("EKAR Analysis");
 
 
 	selectWindow("Final FRET/CFP Image");
-	setBatchMode("exit & display");
 	run("Threshold...");
 	waitForUser("Threshold Image, then draw an ROI");
 
@@ -92,7 +78,7 @@ rename("EKAR Analysis");
 	for (n=1; n<=nSlices; n++) {
 		selectWindow("Final FRET/CFP Image");
 		setSlice(n);
-		roiManager("Select", 2);
+		roiManager("Select", 0);
 		run("Measure");
 		run("Next Slice [>]");
 	}

@@ -1,4 +1,4 @@
-rename("EKAR Analysis");
+macro 'EKAR Analysis [E]' {
 	rename("Original");
 	setBatchMode(true);
 	run("Duplicate...", "title=[EKAR Analysis] duplicate range=1-nSlices");
@@ -24,6 +24,7 @@ rename("EKAR Analysis");
 	ch=3;
 	fr=nSlices/ch;
 
+	selectWindow("EKAR Analysis")
 	run("Stack to Hyperstack...", "order=xyczt(default) channels=ch slices=1 frames=fr display=Grayscale");
 
 	selectWindow("EKAR Analysis")
@@ -49,9 +50,6 @@ rename("EKAR Analysis");
 		selectWindow("EKAR CFP-1");	
 		rename("EKAR CFP Mask");	
 		run("Gaussian Blur...", "sigma=5 stack");
-		setAutoThreshold("Default dark");
-		//run("Threshold...");
-		setOption("BlackBackground", false);
 		run("Convert to Mask", "method=Default background=Dark calculate black");
 
 	selectWindow("EKAR CFP Mask");
@@ -97,6 +95,7 @@ rename("EKAR Analysis");
 		
 	selectWindow("Final FRET/CFP Image");
 	setBatchMode("exit & display");
+	setThreshold(0.01,100);
 	run("Threshold...");
 	waitForUser("Threshold Image, then draw an ROI");
 	
@@ -111,3 +110,4 @@ rename("EKAR Analysis");
 		run("Measure");
 		run("Next Slice [>]");
 	}
+}
