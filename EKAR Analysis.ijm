@@ -30,10 +30,10 @@ macro 'EKAR Analysis [E]' {
 	selectWindow("EKAR Analysis")
 		run("Split Channels");
 	selectWindow("C1-EKAR Analysis");
-		rename("EKAR FRET");
+		rename("EKAR CFP");
 		run("Enhance Contrast", "saturated=0.35");
 	selectWindow("C2-EKAR Analysis");
-		rename("EKAR CFP");
+		rename("EKAR FRET");
 		run("Enhance Contrast", "saturated=0.35");
 	selectWindow("C3-EKAR Analysis");
 		rename("EKAR M1 Label");

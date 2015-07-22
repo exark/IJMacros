@@ -11,9 +11,11 @@ cellNum = Dialog.getString();
 interval = Dialog.getString();
 ch=Dialog.getNumber();
 splitAt=Dialog.getNumber();
-splitAt=splitAt*2;
-IJ.log(splitAt);
+splitAt=splitAt*ch;
 totSlices=nSlices;
+
+
+setBatchMode(true);
 
 run("Duplicate...","title=baseline , duplicate range=1-"+splitAt);
 selectWindow(imageName);
@@ -27,30 +29,39 @@ outputDirTreatment=imageDir+"Treatment/";
 File.makeDirectory(outputDirBaseline);
 File.makeDirectory(outputDirTreatment);
 
+
 selectWindow("baseline");
-splitStack("baseline",outputDirBaseline+"Cell"+cellNum+"_"+interval+"/");
+splitStack("baseline",outputDirBaseline+"Cell"+cellNum+"_"+interval+"/",ch);
 
 selectWindow("treatment");
-splitStack("treatment",outputDirTreatment+"Cell"+cellNum+"_"+interval+"/");
+splitStack("treatment",outputDirTreatment+"Cell"+cellNum+"_"+interval+"/",ch);
 
-function splitStack(stackName,targetDir) {
-	run("Deinterleave", "how=2");
-	File.makeDirectory(targetDir)
+setBatchMode(false);
+
+showMessage("Fin!")
+
+function splitStack(stackName,targetDir,ch) {
+	
+	run("Stack to Hyperstack...", "order=xyczt(default) channels=" + ch + " slices=1 frames=" + (nSlices/ch) + " display=Grayscale");
+	run("Split Channels");
+	File.makeDirectory(targetDir);
 	for (i=1; i<=ch; i++) {
-		selectWindow(stackName+" #"+i);
+		selectWindow("C" + i + "-" + stackName);
 		sl=nSlices;
 		channelDir=targetDir+"/Ch"+i+"/";
 		File.makeDirectory(channelDir);
-		setBatchMode(true);
+		
 		for (j=1; j<=sl; j++) {
+			showProgress((j/sl)+(i/ch));
 			setSlice(j);
 			run("Duplicate...","title="+j);
 			saveAs("Tiff",channelDir+j+".tiff");
 			close();
 		}
-		setBatchMode(false);
-		selectWindow(stackName+" #"+i);
+
+		selectWindow("C" + i + "-" + stackName);
 		close();
+		
 	}
 }
 
