@@ -14,25 +14,25 @@ from ij.measure import ResultsTable
 
 def run():
   srcDir = srcFile.getAbsolutePath()
-  finalResults = []
   
   for dirName, subdirs, filenames in os.walk(srcDir):
-    for filename in filenames:
-      # Check for file extension
-      if not filename.endswith(ext):
-        continue
-      process(srcDir, dirName, filename)
-      rt = ResultsTable.getResultsTable()
-      colRaw = rt.getColumnIndex("IntDen")
-      colRatio = rt.getColumnIndex("RawIntDen")
-      finalResults.append(rt.getColumn(colRaw))
-      finalResults.append(rt.getColumn(colRatio))
-      
-
-  with open(os.path.join(dirName, 'results.csv'), 'wb') as csvfile:
-    writer = csv.writer(csvfile, delimiter=",")
-    for row in zip(*finalResults):
-      writer.writerow(row)
+    if len(subdirs)==0:
+      finalResults = []
+      for filename in filenames:
+        # Check for file extension 
+        if not filename.endswith(ext):
+          continue
+        process(srcDir, dirName, filename)
+        rt = ResultsTable.getResultsTable()
+        colRaw = rt.getColumnIndex("IntDen")
+        colRatio = rt.getColumnIndex("RawIntDen")
+        finalResults.append(rt.getColumn(colRaw))
+        finalResults.append(rt.getColumn(colRatio))
+    
+      with open(os.path.join(dirName, dirName+'.csv'), 'wb') as csvfile:
+        writer = csv.writer(csvfile, delimiter=",")
+        for row in zip(*finalResults):
+          writer.writerow(row)
  
 def process(srcDir, currentDir, fileName):
   image = IJ.openImage(os.path.join(currentDir, fileName))
