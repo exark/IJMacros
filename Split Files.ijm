@@ -3,7 +3,7 @@ imageDir=getInfo("image.directory");
 
 Dialog.create("Parameters");
 Dialog.addString("Cell Number:","1");
-Dialog.addString("Imaging interval","3s");
+Dialog.addString("Imaging interval","0.1s");
 Dialog.addNumber("# of Channels:",1);
 //Dialog.addNumber("Split at frame:",0);
 Dialog.show();

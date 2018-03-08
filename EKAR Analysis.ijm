@@ -51,11 +51,11 @@ macro 'EKAR Analysis [E]' {
 	selectWindow("EKAR Analysis")
 		run("Split Channels");
 	selectWindow("C3-EKAR Analysis");
-		rename("EKAR M1 Label");
+		rename("EKAR CFP");
 	selectWindow("C2-EKAR Analysis");
 		rename("EKAR FRET");
 	selectWindow("C1-EKAR Analysis");
-		rename("EKAR CFP");
+		rename("EKAR M1 Label");
 	//=======================================================================
 
 	selectWindow("EKAR CFP");

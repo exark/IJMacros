@@ -1,4 +1,5 @@
 rename("Movie");
+run("Set Measurements...", "integrated limit redirect=None decimal=3");
 run("Clear Results");
 for (n=1; n<=nSlices; n++) {
 	setSlice(n);

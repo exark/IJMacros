@@ -14,6 +14,7 @@ from ij.measure import ResultsTable
 
 def run():
   srcDir = srcFile.getAbsolutePath()
+  IJ.run("Set Measurements...", "integrated limit redirect=None decimal=3")
   
   for dirName, subdirs, filenames in os.walk(srcDir):
     if len(subdirs)==0:
