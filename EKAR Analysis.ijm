@@ -19,22 +19,21 @@ macro 'EKAR Analysis [E]' {
 	run("Duplicate...", "title=[EKAR Analysis] duplicate range=1-nSlices");
 	selectWindow("Original")
 	close()
-	run("Set Measurements...", "  mean limit redirect=None decimal=3");
+	run("Set Measurements...", "  mean limit redirect=None decimal=9");
 
 	//Uses ROIs selected earlier for background subtraction
 	roiManager("Select", 0);
 	roiManager("Remove Slice Info");
 	roiManager("Select", 1);
 	roiManager("Remove Slice Info");
-
 		for (n= 1; n<=nSlices; n++) {
+			selectWindow("EKAR Analysis");
 			setSlice(n);
 			roiManager("Select", 0);
 			run("Measure");
 			BG = getResult("Mean");
 			roiManager("Select", 1);
 			run("Subtract...", "value=BG slice");
-			run("Next Slice [>]");
 		}
 	//=======================================================================
 	//assumes three channels, change ch here for different number of channels
@@ -50,23 +49,22 @@ macro 'EKAR Analysis [E]' {
 	//Move these titles around if channels are in a different order
 	selectWindow("EKAR Analysis")
 		run("Split Channels");
-	selectWindow("C3-EKAR Analysis");
-		rename("EKAR CFP");
 	selectWindow("C2-EKAR Analysis");
-		rename("EKAR FRET");
+		rename("EKAR CFP");
 	selectWindow("C1-EKAR Analysis");
+		rename("EKAR FRET");
+	selectWindow("C3-EKAR Analysis");
 		rename("EKAR M1 Label");
 	//=======================================================================
 
-	selectWindow("EKAR CFP");
+	selectWindow("EKAR FRET");
 	//generate mask from cell (we use CFP as it's usually our least noisy channel)
-		run("Duplicate...", "title=[EKAR CFP-1] duplicate range=1-fr");
-		selectWindow("EKAR CFP-1");	
-		rename("EKAR CFP Mask");	
+		run("Duplicate...", "title=[Mask] duplicate range=1-fr");
+		selectWindow("Mask");		
 		run("Gaussian Blur...", "sigma=5 stack");
 		run("Convert to Mask", "method=Default background=Dark calculate black");
 	//convert mask to 0 or 1 so that we can multiply it into our FRET/CFP ratio and get rid of the background
-	selectWindow("EKAR CFP Mask");
+	selectWindow("Mask");
 		run("Divide...", "value=255 stack");
 
 	//Gaussian blur images so as to remove variability due to diffusion
@@ -85,15 +83,15 @@ macro 'EKAR Analysis [E]' {
 		rename("EKAR FRET/CFP Ratio");
 
 	//apply mask to final FRET image, then change lookup table to be pretty
-	imageCalculator("Multiply create 32-bit stack", "EKAR FRET/CFP Ratio","EKAR CFP Mask");
+	imageCalculator("Multiply create 32-bit stack", "EKAR FRET/CFP Ratio","Mask");
 		selectWindow("Result of EKAR FRET/CFP Ratio");
 		rename("Final FRET/CFP Image");
-		run("01 Jet");
+		run("Fire");
 
 	//clean up workspace before final step
 	selectWindow("Final FRET/CFP Image");	
 		run("Clear Results");
-	selectWindow("EKAR CFP Mask");		
+	selectWindow("Mask");		
 		run("Close");
 	selectWindow("EKAR FRET/CFP Ratio");
 		run("Close");
@@ -111,31 +109,23 @@ macro 'EKAR Analysis [E]' {
 		selectWindow("Final FRET/CFP Image");
 
 	setBatchMode("exit & display");
+	run("Tile");
 	
 	//Loop for processing multiple ROIs (single cells) from an image
 	keepGoing = true;
 	currentROI = 2;
 	setTool("freehand");
 	do {
+		waitForUser("Draw an ROI");
+		run("Clear Results");
 		selectWindow("Final FRET/CFP Image");
-		//Assume that background values are 0.01 or less and autothreshold
-		setThreshold(0.01,100,"over/under");
-		//Allows you to alter threshold. Alter threshold so background is below threshold
-		//Then draw an ROI around your cell, add it to the ROI manager and click okay at the prompt
-		run("Threshold...");
-		waitForUser("Threshold Image, then draw an ROI");
-		
 		roiManager("Select", currentROI);
 		roiManager("Remove Slice Info");
-
-		run("Clear Results");
-				
-		for (n=1; n<=nSlices; n++) {
+		for (n= 1; n<=nSlices; n++) {
 			selectWindow("Final FRET/CFP Image");
 			setSlice(n);
-			roiManager("Select", currentROI);
+			setThreshold(0.0200, 100.0000);
 			run("Measure");
-			run("Next Slice [>]");
 		}
 		String.copyResults;
 		currentROI = currentROI+1;

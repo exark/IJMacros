@@ -38,7 +38,7 @@ def run():
 def process(srcDir, currentDir, fileName):
   image = IJ.openImage(os.path.join(currentDir, fileName))
   IJ.run("Clear Results")
-  IJ.setThreshold(image, 200, 10000)
+  IJ.setThreshold(image, 400, 10000)
   
   for slice in range(1,image.getNSlices()+1,1):
   	image.setSlice(slice)
