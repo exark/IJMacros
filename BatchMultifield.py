@@ -37,15 +37,20 @@ def run():
  
 def process(srcDir, currentDir, fileName):
   image = IJ.openImage(os.path.join(currentDir, fileName))
+  IJ.log(currentDir)
+  IJ.log(fileName)
   IJ.run("Clear Results")
-  IJ.setThreshold(image, 400, 10000)
-  
-  for slice in range(1,image.getNSlices()+1,1):
+  #set lowerbound threshold here
+  IJ.setThreshold(image, 200, 10000)
+
+  # Change (1,25) below to (1,n+1) where n is the number of frames
+  for slice in range(1,25,1):
   	image.setSlice(slice)
   	IJ.run(image, "Select All", "")
   	IJ.run(image, "Measure", "")
   
   rt = ResultsTable.getResultsTable()
+  # this line calculates the baseline
   baseline = (rt.getValue("IntDen",0) + rt.getValue("IntDen",1) + rt.getValue("IntDen",2) + rt.getValue("IntDen",3))/4.0
   for result in range(0,rt.getCounter()):
   	cur_intensity = rt.getValue("IntDen",result)
