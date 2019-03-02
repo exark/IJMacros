@@ -86,7 +86,7 @@ macro 'EKAR Analysis [E]' {
 	imageCalculator("Multiply create 32-bit stack", "EKAR FRET/CFP Ratio","Mask");
 		selectWindow("Result of EKAR FRET/CFP Ratio");
 		rename("Final FRET/CFP Image");
-		run("Fire");
+		run("CubeHelix2");
 
 	//clean up workspace before final step
 	selectWindow("Final FRET/CFP Image");	
@@ -107,6 +107,7 @@ macro 'EKAR Analysis [E]' {
 		selectWindow("EKAR CFP");
 			run("Enhance Contrast", "saturated=0.35");
 		selectWindow("Final FRET/CFP Image");
+			run("Enhance Contrast", "saturated=0.1");
 
 	setBatchMode("exit & display");
 	run("Tile");
