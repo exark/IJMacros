@@ -47,6 +47,9 @@ Multifield.py
 
 Script for processing images collected in Puthenveedu lab's ensemble internalization and recycling assay.
 
+Release history:
+[![DOI](https://zenodo.org/badge/36182769.svg)](https://zenodo.org/badge/latestdoi/36182769) < Kunselman et al 2019
+
 Object Picker
 -------------
 
