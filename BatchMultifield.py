@@ -11,6 +11,7 @@ import os
 
 from ij import IJ, ImagePlus
 from ij.measure import ResultsTable
+from ij.plugin import ChannelSplitter, HyperStackConverter
 
 def run():
   srcDir = srcFile.getAbsolutePath()
@@ -36,26 +37,58 @@ def run():
           writer.writerow(row)
  
 def process(srcDir, currentDir, fileName):
-  image = IJ.openImage(os.path.join(currentDir, fileName))
-  IJ.run("Clear Results")
-  #set lowerbound threshold here
-  IJ.setThreshold(image, 200, 10000)
-
-  # Change (1,25) below to (1,n+1) where n is the number of frames
-  for slice in range(1,(image.getNSlices()+1),1):
-  	image.setSlice(slice)
-  	IJ.run(image, "Select All", "")
-  	IJ.run(image, "Measure", "")
-  
-  rt = ResultsTable.getResultsTable()
-  # this line calculates the baseline
-  baseline = (rt.getValue("IntDen",1) + rt.getValue("IntDen",2) + rt.getValue("IntDen",3))/3.0
-  for result in range(0,rt.getCounter()):
-  	cur_intensity = rt.getValue("IntDen",result)
-  	ratio = cur_intensity/baseline
-  	rt.setValue("RawIntDen",result,ratio)
-
-  rt.updateResults()
-  image.close()
+	# Change these depending on # of channels
+	num_ch = 2
+	master_ch = 1
+	num_baselines_frames = 3
+	
+	# Setup ImageJ for Macro
+	IJ.run("Set Measurements...", "integrated limit redirect=None decimal=3")
+	IJ.run("Clear Results")
+	
+	# Open image and split into subchannels
+	original = IJ.openImage(os.path.join(currentDir, fileName))
+	original = HyperStackConverter.toHyperStack(original, num_ch, 1,
+	                            				original.getNSlices()/num_ch,
+	                            				"Grayscale")
+	# uncomment following line if you wanna see your original
+	#original.show()
+	chs = ChannelSplitter.split(original)
+	# uncomment following lines if you wanna see your channels
+	#for ch in chs:
+	#	ch.show()	
+	
+	original.close()
+	
+	# Grab master channel so we can analyze
+	image = chs[master_ch-1]
+	mask = chs[master_ch]
+	
+	IJ.setThreshold(image, 200, 10000)
+	
+	# Iterate through slices
+	for slice in range(1,image.getNFrames()+1,):
+		image.setSlice(slice)
+		IJ.run(image, "Select All", "")
+		IJ.run(image, "Measure", "")
+	
+	rt = ResultsTable.getResultsTable()
+	
+	# this line calculates the baseline
+	# janky fucking hack to skip first frame for baseline calculcation
+	# remove +1 from below to use all initial frames
+	baseline = 0
+	for frame in range(num_baselines_frames):
+		baseline += rt.getValue("IntDen",frame+1)
+	baseline = baseline/num_baselines_frames
+	
+	for result in range(0,rt.getCounter()):
+		cur_intensity = rt.getValue("IntDen",result)
+		ratio = cur_intensity/baseline
+		rt.setValue("RawIntDen",result,ratio)
+	
+	rt.show("Results")
+	for ch in chs:
+		ch.close()
  
 run()

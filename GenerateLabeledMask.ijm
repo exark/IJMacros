@@ -1,3 +1,5 @@
+dir=getDirectory("image");
+name=getTitle();
 newImage("mask", "8-bit black", 512, 512, 1);
 selectWindow("mask");
 run("Select All");
@@ -11,3 +13,6 @@ for (i=0; i < roiManager("count"); i++){
 		setPixel(xpoints[point], ypoints[point], (i+1));
 	}
 }
+
+selectWindow("mask");
+saveAs('Tiff',dir+name+"_labels")

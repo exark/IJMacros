@@ -3,7 +3,7 @@ imageDir=getInfo("image.directory");
 
 Dialog.create("Parameters");
 Dialog.addString("Cell Number:","1");
-Dialog.addString("Imaging interval","0.01s");
+Dialog.addString("Imaging interval","0.033s");
 Dialog.addNumber("# of Channels:",1);
 //Dialog.addNumber("Split at frame:",0);
 Dialog.show();
@@ -34,7 +34,7 @@ File.makeDirectory(outputDirTreatment);
 //splitStack("baseline",outputDirBaseline+"Cell"+cellNum+"_"+interval+"/",ch);
 
 selectWindow("treatment");
-splitStack("treatment",outputDirTreatment+"Field"+cellNum+"_"+interval+"/",ch);
+splitStack("treatment",outputDirTreatment+"Cell"+cellNum+"_"+interval+"/",ch);
 
 setBatchMode(false);
 
